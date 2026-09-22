@@ -1,0 +1,145 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../views/**/*.blade.php';
+
+@theme {
+    --font-sans: 'Satoshi', ui-sans-serif, system-ui, sans-serif;
+
+
+    --color-sidebar-bg: #3D3428;
+    --color-sidebar-text: #E8DFC6;
+    --color-sidebar-active: #F5EDD6;
+    --color-content-bg: #F5EDD6;
+    --color-content-surface: #FFFDF7;
+    --color-ink: #3D3428;
+    --color-ink-secondary: #6B5D45;
+    --color-ink-muted: #9C8E76;
+    --color-accent: #C9A84C;
+    --color-accent-hover: #B8973E;
+    --color-accent-subtle: rgba(201, 168, 76, 0.1);
+    --color-rule: #D4C5A9;
+    --color-rule-strong: #B8A88A;
+    --color-danger: #B44D3B;
+    --color-danger-hover: #9E3F2F;
+    --color-success: #5A7D4C;
+}
+
+:root {
+    --sidebar-bg: #3D3428;
+    --sidebar-text: #E8DFC6;
+    --sidebar-active: #F5EDD6;
+    --content-bg: #F5EDD6;
+    --content-surface: #FFFDF7;
+    --ink: #3D3428;
+    --ink-secondary: #6B5D45;
+    --ink-muted: #9C8E76;
+    --accent: #C9A84C;
+    --accent-hover: #B8973E;
+    --accent-subtle: rgba(201, 168, 76, 0.1);
+    --rule: #D4C5A9;
+    --rule-strong: #B8A88A;
+    --danger: #B44D3B;
+    --danger-hover: #9E3F2F;
+    --success: #5A7D4C;
+    --modal-overlay: rgba(61, 52, 40, 0.4);
+}
+
+/* Base typography & selection */
+body {
+    font-family: 'Satoshi', ui-sans-serif, system-ui, sans-serif;
+    background-color: var(--content-bg);
+    color: var(--ink);
+    caret-color: var(--accent);
+}
+
+::selection {
+    background-color: rgba(201, 168, 76, 0.3);
+    color: var(--ink);
+}
+
+/* Custom Scrollbar (WebKit) */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--content-bg);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--rule);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--rule-strong);
+}
+
+
+.text-page-title {
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--ink);
+}
+
+.text-section {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--ink);
+}
+
+.text-body-ledger {
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--ink);
+}
+
+.text-label-ledger {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--ink);
+}
+
+.text-caption-ledger {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--ink-secondary);
+}
+
+.text-column-ledger {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink-secondary);
+}
+
+/* Dialog / Modal Styling per DESIGN.md */
+dialog {
+    margin: auto;
+}
+
+dialog::backdrop {
+    background-color: var(--modal-overlay);
+    backdrop-filter: blur(1px);
+}
+
+dialog[open] {
+    animation: modal-in 200ms ease-out forwards;
+}
+
+@keyframes modal-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
