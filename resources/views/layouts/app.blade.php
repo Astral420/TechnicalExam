@@ -90,20 +90,6 @@
                         </button>
                     </div>
                 @endif
-
-                @if ($errors->any())
-                    <div class="flash-alert bg-[rgba(180,77,59,0.12)] text-[#B44D3B] border border-[#B44D3B]/30 rounded-md py-3 px-4 text-[14px]">
-                        <div class="font-semibold mb-1 flex items-center gap-2">
-                            <x-bi-exclamation-circle class="w-5 h-5 flex-shrink-0" />
-                            <span>Please correct the errors below:</span>
-                        </div>
-                        <ul class="list-disc list-inside space-y-0.5 text-[13px] ml-5">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
             </div>
 
             <!-- Page Content Slot -->

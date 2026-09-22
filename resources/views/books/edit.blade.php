@@ -43,7 +43,7 @@
                             id="author_id"
                             required
                             class="w-full bg-[#FFFDF7] border @error('author_id') border-[#B44D3B] @else border-[#D4C5A9] @enderror text-[#3D3428] rounded-md px-3 py-2.5 text-[14px] focus:outline-none focus:border-[#C9A84C] focus:ring-2 focus:ring-[#C9A84C]/25">
-                        <option value="">-- Select an Author --</option>
+                        <option value="">Select an Author</option>
                         @foreach($authors as $author)
                             <option value="{{ $author->id }}" @selected(old('author_id', $book->author_id) == $author->id)>
                                 {{ $author->name }}

@@ -43,14 +43,15 @@
             @endif
         </form>
 
-        <div class="text-[12px] text-[#6B5D45]">
+        <div id="ledger-total-count" class="text-[12px] text-[#6B5D45]">
             Showing {{ $authors->total() }} total {{ Str::plural('author', $authors->total()) }}
         </div>
     </div>
 
     <!-- Data Table Container (Warm-Paper Ledger) -->
-    <div class="bg-[#FFFDF7] rounded-none overflow-x-auto">
-        <table class="w-full text-left border-collapse" id="authors-table">
+    <div id="ledger-table-container" class="space-y-4">
+        <div class="bg-[#FFFDF7] rounded-none overflow-x-auto">
+            <table class="w-full text-left border-collapse" id="authors-table">
             <thead>
                 <tr class="border-b border-[#B8A88A]">
                     <th scope="col" class="py-3 px-4 text-column-ledger">Name</th>
@@ -118,6 +119,7 @@
     <!-- Pagination -->
     <div>
         {{ $authors->links('vendor.pagination.ledger') }}
+    </div>
     </div>
 </div>
 
@@ -187,7 +189,7 @@
             Are you sure you want to delete <span id="delete-item-name" class="font-semibold text-[#3D3428]"></span>? Deleting this author will also remove all their associated books from the ledger.
         </p>
 
-        <form id="delete-author-form" method="POST" action="">
+        <form id="delete-author-form" method="POST" action="" onsubmit="handleDeleteAuthorSubmit(event)">
             @csrf
             @method('DELETE')
             <div class="flex items-center justify-end gap-3">
@@ -262,6 +264,45 @@
         document.getElementById('delete-modal').close();
     }
 
+    async function handleDeleteAuthorSubmit(event) {
+        event.preventDefault();
+        const form = event.target;
+        const submitBtn = document.getElementById('confirm-delete-button');
+
+        submitBtn.disabled = true;
+        submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                body: new FormData(form)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                showFlash(data.message || 'An error occurred while deleting the author.', 'error');
+                return;
+            }
+
+            closeDeleteModal();
+            showFlash(data.message || 'Author deleted successfully.', 'success');
+            await refreshLedger();
+
+        } catch (err) {
+            console.error(err);
+            showFlash('Network error. Please try again.', 'error');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+        }
+    }
+
     async function handleAuthorFormSubmit(event) {
         event.preventDefault();
         clearAuthorErrors();
@@ -311,11 +352,7 @@
 
             closeAuthorModal();
             showFlash(data.message || (isEdit ? 'Author updated successfully.' : 'Author created successfully.'), 'success');
-
-            // Seamless pagereload to re-render paginated ledger
-            setTimeout(() => {
-                window.location.reload();
-            }, 600);
+            await refreshLedger();
 
         } catch (err) {
             console.error(err);
@@ -325,6 +362,55 @@
             submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
         }
     }
+
+    async function refreshLedger(url = window.location.href) {
+        try {
+            const response = await fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'text/html'
+                }
+            });
+
+            if (!response.ok) return;
+
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            const newTable = doc.getElementById('ledger-table-container');
+            const currentTable = document.getElementById('ledger-table-container');
+            if (newTable && currentTable) {
+                currentTable.innerHTML = newTable.innerHTML;
+            }
+
+            const newCount = doc.getElementById('ledger-total-count');
+            const currentCount = document.getElementById('ledger-total-count');
+            if (newCount && currentCount) {
+                currentCount.innerHTML = newCount.innerHTML;
+            }
+        } catch (err) {
+            console.error('Error refreshing ledger table:', err);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const tableContainer = document.getElementById('ledger-table-container');
+        if (tableContainer) {
+            tableContainer.addEventListener('click', async (e) => {
+                const link = e.target.closest('a');
+                if (link && link.closest('nav[role="navigation"]')) {
+                    e.preventDefault();
+                    await refreshLedger(link.href);
+                    window.history.pushState({}, '', link.href);
+                }
+            });
+        }
+    });
+
+    window.addEventListener('popstate', () => {
+        refreshLedger(window.location.href);
+    });
 
     function showFlash(message, type = 'success') {
         const container = document.getElementById('flash-container');

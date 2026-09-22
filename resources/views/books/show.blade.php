@@ -25,15 +25,12 @@
                     <x-bi-pencil class="w-3.5 h-3.5" />
                     <span>Edit</span>
                 </a>
-                <form action="{{ route('books.destroy', $book) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this book entry?');">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit"
-                            class="px-3.5 py-2 text-[13px] font-semibold bg-[#B44D3B] text-white rounded-md hover:bg-[#9E3F2F] transition-colors cursor-pointer inline-flex items-center gap-1.5">
-                        <x-bi-trash class="w-3.5 h-3.5" />
-                        <span>Delete</span>
-                    </button>
-                </form>
+                <button type="button"
+                        onclick="openDeleteModal()"
+                        class="px-3.5 py-2 text-[13px] font-semibold bg-[#B44D3B] text-white rounded-md hover:bg-[#9E3F2F] transition-colors cursor-pointer inline-flex items-center gap-1.5">
+                    <x-bi-trash class="w-3.5 h-3.5" />
+                    <span>Delete</span>
+                </button>
             </div>
         </div>
 
@@ -75,4 +72,39 @@
         </dl>
     </div>
 </div>
+
+<!-- Delete Confirmation Dialog -->
+<dialog id="delete-modal" class="fixed inset-0 m-auto p-0 rounded-lg max-w-[420px] w-full bg-[#FFFDF7] border border-[#D4C5A9] text-[#3D3428]">
+    <div class="p-6">
+        <h2 class="text-section text-[#B44D3B] mb-2">Delete Book Entry</h2>
+        <p class="text-[14px] text-[#6B5D45] mb-5">
+            Are you sure you want to delete <span class="font-semibold text-[#3D3428] italic">"{{ $book->title }}"</span> from the ledger? This action cannot be reversed.
+        </p>
+
+        <form action="{{ route('books.destroy', $book) }}" method="POST">
+            @csrf
+            @method('DELETE')
+            <div class="flex items-center justify-end gap-3">
+                <button type="button"
+                        onclick="closeDeleteModal()"
+                        class="px-4 py-2.5 text-[13px] font-semibold border border-[#B8A88A] text-[#3D3428] rounded-md hover:bg-[#F5EDD6] transition-colors cursor-pointer">
+                    Cancel
+                </button>
+                <button type="submit"
+                        class="bg-[#B44D3B] text-white font-semibold text-[13px] py-2.5 px-4 rounded-md hover:bg-[#9E3F2F] transition-colors cursor-pointer">
+                    Delete
+                </button>
+            </div>
+        </form>
+    </div>
+</dialog>
+
+<script>
+    function openDeleteModal() {
+        document.getElementById('delete-modal').showModal();
+    }
+    function closeDeleteModal() {
+        document.getElementById('delete-modal').close();
+    }
+</script>
 @endsection

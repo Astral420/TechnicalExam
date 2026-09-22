@@ -43,14 +43,15 @@
             @endif
         </form>
 
-        <div class="text-[12px] text-[#6B5D45]">
+        <div id="ledger-total-count" class="text-[12px] text-[#6B5D45]">
             Showing {{ $books->total() }} total {{ Str::plural('book', $books->total()) }}
         </div>
     </div>
 
     <!-- Data Table Container (Warm-Paper Ledger) -->
-    <div class="bg-[#FFFDF7] rounded-none overflow-x-auto">
-        <table class="w-full text-left border-collapse" id="books-table">
+    <div id="ledger-table-container" class="space-y-4">
+        <div class="bg-[#FFFDF7] rounded-none overflow-x-auto">
+            <table class="w-full text-left border-collapse" id="books-table">
             <thead>
                 <tr class="border-b border-[#B8A88A]">
                     <th scope="col" class="py-3 px-4 text-column-ledger">Title</th>
@@ -125,6 +126,7 @@
     <div>
         {{ $books->links('vendor.pagination.ledger') }}
     </div>
+    </div>
 </div>
 
 <!-- Book Create / Edit Modal Dialog -->
@@ -163,7 +165,7 @@
                             id="modal-book-author-id"
                             required
                             class="w-full bg-[#FFFDF7] border border-[#D4C5A9] text-[#3D3428] rounded-md px-3 py-2.5 text-[14px] focus:outline-none focus:border-[#C9A84C] focus:ring-2 focus:ring-[#C9A84C]/25">
-                        <option value="">-- Select an Author --</option>
+                        <option value="">Select an Author</option>
                         @foreach($authors as $author)
                             <option value="{{ $author->id }}">{{ $author->name }}</option>
                         @endforeach
@@ -208,7 +210,7 @@
             Are you sure you want to delete <span id="delete-item-name" class="font-semibold text-[#3D3428] italic"></span> from the ledger? This action cannot be reversed.
         </p>
 
-        <form id="delete-book-form" method="POST" action="">
+        <form id="delete-book-form" method="POST" action="" onsubmit="handleDeleteBookSubmit(event)">
             @csrf
             @method('DELETE')
             <div class="flex items-center justify-end gap-3">
@@ -285,6 +287,45 @@
         document.getElementById('delete-modal').close();
     }
 
+    async function handleDeleteBookSubmit(event) {
+        event.preventDefault();
+        const form = event.target;
+        const submitBtn = document.getElementById('confirm-delete-button');
+
+        submitBtn.disabled = true;
+        submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                body: new FormData(form)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                showFlash(data.message || 'An error occurred while deleting the book.', 'error');
+                return;
+            }
+
+            closeDeleteModal();
+            showFlash(data.message || 'Book deleted successfully.', 'success');
+            await refreshLedger();
+
+        } catch (err) {
+            console.error(err);
+            showFlash('Network error. Please try again.', 'error');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+        }
+    }
+
     async function handleBookFormSubmit(event) {
         event.preventDefault();
         clearBookErrors();
@@ -334,11 +375,7 @@
 
             closeBookModal();
             showFlash(data.message || (isEdit ? 'Book updated successfully.' : 'Book created successfully.'), 'success');
-
-            // Seamless page reload to re-render paginated ledger
-            setTimeout(() => {
-                window.location.reload();
-            }, 600);
+            await refreshLedger();
 
         } catch (err) {
             console.error(err);
@@ -348,6 +385,55 @@
             submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
         }
     }
+
+    async function refreshLedger(url = window.location.href) {
+        try {
+            const response = await fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'text/html'
+                }
+            });
+
+            if (!response.ok) return;
+
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            const newTable = doc.getElementById('ledger-table-container');
+            const currentTable = document.getElementById('ledger-table-container');
+            if (newTable && currentTable) {
+                currentTable.innerHTML = newTable.innerHTML;
+            }
+
+            const newCount = doc.getElementById('ledger-total-count');
+            const currentCount = document.getElementById('ledger-total-count');
+            if (newCount && currentCount) {
+                currentCount.innerHTML = newCount.innerHTML;
+            }
+        } catch (err) {
+            console.error('Error refreshing ledger table:', err);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const tableContainer = document.getElementById('ledger-table-container');
+        if (tableContainer) {
+            tableContainer.addEventListener('click', async (e) => {
+                const link = e.target.closest('a');
+                if (link && link.closest('nav[role="navigation"]')) {
+                    e.preventDefault();
+                    await refreshLedger(link.href);
+                    window.history.pushState({}, '', link.href);
+                }
+            });
+        }
+    });
+
+    window.addEventListener('popstate', () => {
+        refreshLedger(window.location.href);
+    });
 
     function showFlash(message, type = 'success') {
         const container = document.getElementById('flash-container');
