@@ -78,12 +78,12 @@ final class BookAuthorCrudTest extends TestCase
         $author = Author::factory()->create(['name' => 'Old Name']);
 
         $response = $this->put(route('authors.update', $author), [
-            'name' => 'New Name',
+            'name' => 'Updated Author Name',
             'birth_date' => '1950-01-01',
         ]);
 
         $response->assertRedirect(route('authors.index'));
-        $this->assertDatabaseHas('authors', ['id' => $author->id, 'name' => 'New Name']);
+        $this->assertDatabaseHas('authors', ['id' => $author->id, 'name' => 'Updated Author Name']);
     }
 
     public function test_can_delete_author_and_cascades_books(): void
@@ -121,17 +121,17 @@ final class BookAuthorCrudTest extends TestCase
         $author = Author::factory()->create();
 
         $response = $this->post(route('books.store'), [
-            'title' => '1984',
+            'title' => 'Nineteen Eighty-Four',
             'author_id' => $author->id,
             'published_date' => '1949-06-08',
         ]);
 
         $response->assertRedirect(route('books.index'));
         $this->assertDatabaseHas('books', [
-            'title' => '1984',
+            'title' => 'Nineteen Eighty-Four',
             'author_id' => $author->id,
         ]);
-        $book = Book::where('title', '1984')->firstOrFail();
+        $book = Book::where('title', 'Nineteen Eighty-Four')->firstOrFail();
         $this->assertEquals('1949-06-08', $book->published_date->format('Y-m-d'));
     }
 

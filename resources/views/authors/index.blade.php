@@ -312,7 +312,7 @@
             closeAuthorModal();
             showFlash(data.message || (isEdit ? 'Author updated successfully.' : 'Author created successfully.'), 'success');
 
-            // Seamless page reload to re-render paginated ledger
+            // Seamless pagereload to re-render paginated ledger
             setTimeout(() => {
                 window.location.reload();
             }, 600);

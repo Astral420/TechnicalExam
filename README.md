@@ -6,7 +6,7 @@ A book & author management system, mainly a technical exam showcase.
 
 ### Prerequisites
 - **PHP** >= 8.2 with SQLite and PDO extensions enabled
-- **Laravel 12-13**
+- **Laravel 12**
 - **Composer**
 - **Node.js** (v18+) & **npm**
 
@@ -16,7 +16,7 @@ A book & author management system, mainly a technical exam showcase.
 1. **Clone the repository**:
    ```bash
    git clone <repository-url>
-   cd bookauthorCRUD
+   cd TechnicalExam
    ```
 
 2. **Install PHP dependencies**:

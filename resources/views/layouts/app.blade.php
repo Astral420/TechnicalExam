@@ -58,14 +58,6 @@
                     <span>Authors</span>
                 </a>
             </nav>
-
-            <!-- Ledger Meta Footer -->
-            <div class="p-5 border-t border-[#4d4233] text-[12px] text-[#E8DFC6]/60">
-                <div class="flex items-center justify-between">
-                    <span>SQLite</span>
-                    <span class="inline-block w-2 h-2 rounded-full bg-[#5A7D4C]"></span>
-                </div>
-            </div>
         </aside>
 
         <!-- Backdrop overlay for mobile sidebar -->
