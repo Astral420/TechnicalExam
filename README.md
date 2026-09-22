@@ -71,7 +71,7 @@ php artisan test
 
 ---
 
-## 📁 Project Architecture
+## Project Architecture
 
 ```
 app/
@@ -83,7 +83,7 @@ app/
 │   ├── UpdateBookAction.php
 │   └── DeleteBookAction.php
 ├── Http/
-│   ├── Controllers/          # AuthorController & BookController (supports standard + AJAX)
+│   ├── Controllers/          # AuthorController & BookController 
 │   └── Requests/             # Form Requests with validation rules
 └── Models/                   # Author & Book Eloquent models with relationships
 
@@ -93,7 +93,7 @@ database/
 └── seeders/                  # DatabaseSeeder
 
 resources/
-├── css/                      # Main Stylesheet with TailwindCSS
+├── css/                      # Main Stylesheet which contains the design language
 └── views/
     ├── layouts/app.blade.php # Master layout with dark spine sidebar
     ├── authors/              # index, show, create, edit
