@@ -5,7 +5,7 @@ A book & author management system, mainly a technical exam showcase.
 ## Getting Started
 
 ### Prerequisites
-- **PHP** >= 8.2 with SQLite and PDO extensions enabled
+- **PHP** >= 8.3 with SQLite and PDO extensions enabled
 - **Laravel 12**
 - **Composer**
 - **Node.js** (v18+) & **npm**

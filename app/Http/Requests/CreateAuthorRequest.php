@@ -25,7 +25,7 @@ final class CreateAuthorRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'min:10', 'max:255'],
+            'name' => ['required', 'string', 'max:255'],
             'birth_date' => ['required', 'date'],
         ];
     }
