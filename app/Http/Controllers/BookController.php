@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Actions\CreateBookAction;
@@ -11,7 +13,7 @@ use App\Models\Author;
 use App\Models\Book;
 use Illuminate\Http\Request;
 
-class BookController extends Controller
+final class BookController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -21,7 +23,7 @@ class BookController extends Controller
         $query = Book::with('author');
 
         if ($request->filled('search')) {
-            $query->where('title', 'like', '%' . $request->search . '%');
+            $query->where('title', 'like', '%'.$request->search.'%');
         }
 
         $books = $query->latest()->paginate(10)->withQueryString();

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Actions\CreateAuthorAction;
@@ -10,7 +12,7 @@ use App\Http\Requests\UpdateAuthorRequest;
 use App\Models\Author;
 use Illuminate\Http\Request;
 
-class AuthorController extends Controller
+final class AuthorController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -20,7 +22,7 @@ class AuthorController extends Controller
         $query = Author::withCount('books');
 
         if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
+            $query->where('name', 'like', '%'.$request->search.'%');
         }
 
         $authors = $query->latest()->paginate(10)->withQueryString();

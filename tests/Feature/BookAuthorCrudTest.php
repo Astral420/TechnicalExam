@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\Author;
@@ -7,7 +9,7 @@ use App\Models\Book;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class BookAuthorCrudTest extends TestCase
+final class BookAuthorCrudTest extends TestCase
 {
     use RefreshDatabase;
 
